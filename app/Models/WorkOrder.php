@@ -9,6 +9,6 @@ class WorkOrder extends Model
     protected $fillable = [
         'title',
         'description',
-        'status'
+        'status',
     ];
 }

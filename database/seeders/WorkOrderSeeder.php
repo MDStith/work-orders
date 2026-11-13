@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\WorkOrder;
 use Illuminate\Database\Seeder;
 
 class WorkOrderSeeder extends Seeder
@@ -14,24 +14,24 @@ class WorkOrderSeeder extends Seeder
     {
         $orders = [
             [
-                'title' => "Repair leaking faucet",
-                'description' => "The break room faucet drips constantly.",
-                'status' => "open",
+                'title' => 'Repair leaking faucet',
+                'description' => 'The break room faucet drips constantly.',
+                'status' => 'open',
             ],
             [
-                'title' => "Replace hallway light",
-                'description' => "The second floor hallway light is dim.",
-                'status' => "in_progress",
+                'title' => 'Replace hallway light',
+                'description' => 'The second floor hallway light is dim.',
+                'status' => 'in_progress',
             ],
             [
-                'title' => "Fix the conference room door",
+                'title' => 'Fix the conference room door',
                 'description' => "The conference room door doesn't latch.",
-                'status' => "completed",
-            ]
+                'status' => 'completed',
+            ],
         ];
 
         foreach ($orders as $order) {
-            \App\Models\WorkOrder::updateOrCreate(
+            WorkOrder::updateOrCreate(
                 ['title' => $order['title']],
                 [
                     'description' => $order['description'],

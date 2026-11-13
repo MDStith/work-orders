@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\WorkOrder;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request;
 
 class WorkOrderController extends Controller
 {
