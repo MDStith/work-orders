@@ -39,6 +39,7 @@ class WorkOrderIndexTest extends TestCase
             ->where('workOrders.0.id', $order->id)
             ->where('filters.status', '')
             ->where('canUpdateWorkOrders', false)
+            ->where('canCreateWorkOrders', false)
         );
     }
 
@@ -83,7 +84,7 @@ class WorkOrderIndexTest extends TestCase
         $response->assertSessionHasErrors('status');
     }
 
-    public function test_dispatchers_receive_update_permission(): void
+    public function test_dispatchers_receive_work_order_permissions(): void
     {
         $user = User::factory()->create();
 
@@ -97,6 +98,7 @@ class WorkOrderIndexTest extends TestCase
         $response->assertInertia(fn (Assert $page) => $page
             ->component('work-orders/index')
             ->where('canUpdateWorkOrders', true)
+            ->where('canCreateWorkOrders', true)
         );
     }
 

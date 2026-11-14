@@ -13,4 +13,12 @@ Route::get('/work-orders', [WorkOrderController::class, 'index'])->middleware('a
 
 Route::patch('/work-orders/{workOrder}', [WorkOrderController::class, 'update'])->middleware('auth')->name('work-orders.update');
 
+Route::get('/work-orders/create', [WorkOrderController::class, 'create'])
+    ->middleware('auth')
+    ->name('work-orders.create');
+
+Route::post('/work-orders', [WorkOrderController::class, 'store'])
+    ->middleware('auth')
+    ->name('work-orders.store');
+
 require __DIR__.'/settings.php';

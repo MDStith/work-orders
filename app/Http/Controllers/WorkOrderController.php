@@ -33,6 +33,7 @@ class WorkOrderController extends Controller
                 'status' => $status ?? '',
             ],
             'canUpdateWorkOrders' => $request->user()->isDispatcher(),
+            'canCreateWorkOrders' => Gate::allows('create', WorkOrder::class),
         ]);
     }
 
@@ -51,5 +52,30 @@ class WorkOrderController extends Controller
 
         return to_route('work-orders.index');
 
+    }
+
+    public function create(): Response
+    {
+        Gate::authorize('create', WorkOrder::class);
+
+        return Inertia::render('work-orders/create');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        Gate::authorize('create', WorkOrder::class);
+
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:10000'],
+        ]);
+
+        WorkOrder::create([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'status' => 'open',
+        ]);
+
+        return to_route('work-orders.index');
     }
 }

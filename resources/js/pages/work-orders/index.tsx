@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 
 type WorkOrder = {
     id: number;
@@ -13,12 +13,14 @@ type Props = {
         status: string;
     };
     canUpdateWorkOrders: boolean;
+    canCreateWorkOrders: boolean;
 };
 
 export default function WorkOrdersIndex({
     workOrders,
     filters,
     canUpdateWorkOrders,
+    canCreateWorkOrders,
 }: Props) {
     return (
         <>
@@ -26,6 +28,15 @@ export default function WorkOrdersIndex({
 
             <main className="mx-auto max-w-4xl p-8">
                 <h1 className="mb-6 text-3xl font-bold">Work Orders</h1>
+
+                {canCreateWorkOrders && (
+                    <Link
+                        href="/work-orders/create"
+                        className="mb-6 inline-block rounded bg-blue-600 px-4 py-2 text-white"
+                    >
+                        Create work order
+                    </Link>
+                )}
 
                 <div className="mb-6">
                     <label htmlFor="status" className="mr-3">
