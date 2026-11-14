@@ -15,6 +15,7 @@ Built as a portfolio project demonstrating server-side authorization, request va
 - Active status filters preserved after updates.
 - Form validation with inline error messages.
 - Responsive layout, navigation, breadcrumbs, and empty-state messaging.
+- Dashboard totals with links to status-filtered listings.
 
 ## Technology
 
@@ -211,6 +212,7 @@ GitHub Actions runs the configured quality checks on the repository.
 | `resources/js/pages/work-orders/create.tsx`    | Creation form and validation messages            |
 | `tests/Feature/`                               | Feature and authorization tests                  |
 | `.github/workflows/tests.yml`                  | Continuous integration workflow                  |
+| `app/Http/Controllers/DashboardController.php` | Dashboard status counts                          |
 
 ## Current scope and planned work
 
