@@ -11,4 +11,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/work-orders', [WorkOrderController::class, 'index'])->middleware('auth')->name('work-orders.index');
 
+Route::patch('/work-orders/{workOrder}', [WorkOrderController::class, 'update'])->middleware('auth')->name('work-orders.update');
+
 require __DIR__.'/settings.php';

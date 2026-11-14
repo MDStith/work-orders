@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\WorkOrder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,5 +32,22 @@ class WorkOrderController extends Controller
                 'status' => $status ?? '',
             ],
         ]);
+    }
+
+    public function update(Request $request, WorkOrder $workOrder)
+    {
+
+        Gate::authorize('update', $workOrder);
+
+        $validated = $request->validate([
+            'status' => ['required', 'in:open,in_progress,completed'],
+        ]);
+
+        $workOrder->update([
+            'status' => $validated['status'],
+        ]);
+
+        return to_route('work-orders.index');
+
     }
 }
