@@ -107,3 +107,16 @@ export default function CreateWorkOrder() {
         </>
     );
 }
+
+CreateWorkOrder.layout = {
+    breadcrumbs: [
+        {
+            title: 'Work Orders',
+            href: '/work-orders',
+        },
+        {
+            title: 'Create',
+            href: '/work-orders/create',
+        },
+    ],
+};
