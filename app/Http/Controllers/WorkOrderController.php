@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\WorkOrder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -34,7 +35,7 @@ class WorkOrderController extends Controller
         ]);
     }
 
-    public function update(Request $request, WorkOrder $workOrder)
+    public function update(Request $request, WorkOrder $workOrder): RedirectResponse
     {
 
         Gate::authorize('update', $workOrder);
