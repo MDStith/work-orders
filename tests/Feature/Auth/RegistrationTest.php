@@ -35,5 +35,28 @@ class RegistrationTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
+        
+        $this->assertDatabaseHas('users', [
+            'email' => 'test@example.com',
+            'role' => 'viewer',
+        ]);
+    }
+
+    public function test_registration_cannot_assign_dispatcher_role(): void
+    {
+        $response = $this->post(route('register.store'), [
+            'name' => 'Role Test User',
+            'email' => 'role-test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'role' => 'dispatcher',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'role-test@example.com',
+            'role' => 'viewer',
+        ]);
     }
 }
