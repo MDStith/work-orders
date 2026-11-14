@@ -12,9 +12,14 @@ type Props = {
     filters: {
         status: string;
     };
+    canUpdateWorkOrders: boolean;
 };
 
-export default function WorkOrdersIndex({ workOrders, filters }: Props) {
+export default function WorkOrdersIndex({
+    workOrders,
+    filters,
+    canUpdateWorkOrders,
+}: Props) {
     return (
         <>
             <Head title="Work Orders" />
@@ -57,6 +62,37 @@ export default function WorkOrdersIndex({ workOrders, filters }: Props) {
                         <p className="mt-2">{order.description}</p>
 
                         <p className="mt-2 text-sm">Status: {order.status}</p>
+
+                        {canUpdateWorkOrders && (
+                            <div className="mt-3">
+                                <label
+                                    htmlFor={`status-${order.id}`}
+                                    className="mr-3"
+                                >
+                                    Update status
+                                </label>
+
+                                <select
+                                    id={`status-${order.id}`}
+                                    defaultValue={order.status}
+                                    onChange={(event) => {
+                                        router.patch(
+                                            `/work-orders/${order.id}`,
+                                            {
+                                                status: event.target.value,
+                                            },
+                                        );
+                                    }}
+                                    className="rounded border p-2"
+                                >
+                                    <option value="open">Open</option>
+                                    <option value="in_progress">
+                                        In progress
+                                    </option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </div>
+                        )}
                     </article>
                 ))}
             </main>

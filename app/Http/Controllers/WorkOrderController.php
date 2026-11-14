@@ -32,6 +32,7 @@ class WorkOrderController extends Controller
             'filters' => [
                 'status' => $status ?? '',
             ],
+            'canUpdateWorkOrders' => $request->user()->isDispatcher(),
         ]);
     }
 
