@@ -39,19 +39,23 @@ class WorkOrderController extends Controller
 
     public function update(Request $request, WorkOrder $workOrder): RedirectResponse
     {
-
         Gate::authorize('update', $workOrder);
 
         $validated = $request->validate([
             'status' => ['required', 'in:open,in_progress,completed'],
+            'filter_status' => ['nullable', 'in:open,in_progress,completed'],
         ]);
 
         $workOrder->update([
             'status' => $validated['status'],
         ]);
 
-        return to_route('work-orders.index');
+        $filterStatus = $validated['filter_status'] ?? null;
 
+        return to_route(
+            'work-orders.index',
+            $filterStatus ? ['status' => $filterStatus] : [],
+        );
     }
 
     public function create(): Response

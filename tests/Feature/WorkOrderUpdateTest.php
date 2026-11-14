@@ -84,4 +84,64 @@ class WorkOrderUpdateTest extends TestCase
             'status' => 'open',
         ]);
     }
+
+    public function test_status_update_preserves_active_filter(): void
+    {
+        $user = User::factory()->create();
+        $user->role = 'dispatcher';
+        $user->save();
+
+        $workOrder = WorkOrder::create([
+            'title' => 'Repair faucet',
+            'description' => 'The faucet is leaking.',
+            'status' => 'open',
+        ]);
+
+        $response = $this->actingAs($user)->patch(
+            route('work-orders.update', $workOrder),
+            [
+                'status' => 'in_progress',
+                'filter_status' => 'open',
+            ],
+        );
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(
+            route('work-orders.index', ['status' => 'open']),
+        );
+
+        $this->assertDatabaseHas('work_orders', [
+            'id' => $workOrder->id,
+            'status' => 'in_progress',
+        ]);
+    }
+
+    public function test_status_update_with_empty_filter_returns_to_all_statuses(): void
+    {
+        $user = User::factory()->create();
+        $user->role = 'dispatcher';
+        $user->save();
+
+        $workOrder = WorkOrder::create([
+            'title' => 'Repair faucet',
+            'description' => 'The faucet is leaking.',
+            'status' => 'open',
+        ]);
+
+        $response = $this->actingAs($user)->patch(
+            route('work-orders.update', $workOrder),
+            [
+                'status' => 'completed',
+                'filter_status' => '',
+            ],
+        );
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(route('work-orders.index'));
+
+        $this->assertDatabaseHas('work_orders', [
+            'id' => $workOrder->id,
+            'status' => 'completed',
+        ]);
+    }
 }

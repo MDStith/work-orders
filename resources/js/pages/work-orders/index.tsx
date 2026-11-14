@@ -114,6 +114,7 @@ export default function WorkOrdersIndex({
                                             `/work-orders/${order.id}`,
                                             {
                                                 status: event.target.value,
+                                                filter_status: filters.status,
                                             },
                                         );
                                     }}
