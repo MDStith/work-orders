@@ -18,29 +18,29 @@ Built as a portfolio project demonstrating server-side authorization, request va
 
 ## Technology
 
-| Area | Technology |
-| --- | --- |
-| Backend | PHP 8.5, Laravel 13 |
-| Frontend | React 19, TypeScript, Inertia 3 |
-| Styling | Tailwind CSS 4 |
-| Database | MySQL 8.4 |
-| Local environment | Docker, Laravel Sail |
-| Frontend tooling | Vite+ |
-| Testing | PHPUnit, SQLite in memory |
-| Static analysis | PHPStan with Larastan, TypeScript |
-| Formatting and linting | Laravel Pint, Vite+ checks |
-| Continuous integration | GitHub Actions |
+| Area                   | Technology                        |
+| ---------------------- | --------------------------------- |
+| Backend                | PHP 8.5, Laravel 13               |
+| Frontend               | React 19, TypeScript, Inertia 3   |
+| Styling                | Tailwind CSS 4                    |
+| Database               | MySQL 8.4                         |
+| Local environment      | Docker, Laravel Sail              |
+| Frontend tooling       | Vite+                             |
+| Testing                | PHPUnit, SQLite in memory         |
+| Static analysis        | PHPStan with Larastan, TypeScript |
+| Formatting and linting | Laravel Pint, Vite+ checks        |
+| Continuous integration | GitHub Actions                    |
 
 Inertia connects Laravel controllers to React pages. Laravel handles routing, authentication, authorization, validation, and database access; React renders the interface.
 
 ## Permissions
 
-| Action | Guest | Viewer | Dispatcher |
-| --- | --- | --- | --- |
-| View and filter orders | No | Yes | Yes |
-| Open the creation form | No | No | Yes |
-| Create an order | No | No | Yes |
-| Update an order's status | No | No | Yes |
+| Action                   | Guest | Viewer | Dispatcher |
+| ------------------------ | ----- | ------ | ---------- |
+| View and filter orders   | No    | Yes    | Yes        |
+| Open the creation form   | No    | No     | Yes        |
+| Create an order          | No    | No     | Yes        |
+| Update an order's status | No    | No     | Yes        |
 
 New registrations always receive the Viewer role. Submitted role values cannot grant Dispatcher access.
 
@@ -201,16 +201,16 @@ GitHub Actions runs the configured quality checks on the repository.
 
 ## Key application files
 
-| Path | Responsibility |
-| --- | --- |
-| `routes/web.php` | Authenticated application routes |
+| Path                                           | Responsibility                                   |
+| ---------------------------------------------- | ------------------------------------------------ |
+| `routes/web.php`                               | Authenticated application routes                 |
 | `app/Http/Controllers/WorkOrderController.php` | Listing, filtering, creation, and status updates |
-| `app/Policies/WorkOrderPolicy.php` | Dispatcher authorization |
-| `app/Models/WorkOrder.php` | Work-order model |
-| `resources/js/pages/work-orders/index.tsx` | Listing, filtering, and update controls |
-| `resources/js/pages/work-orders/create.tsx` | Creation form and validation messages |
-| `tests/Feature/` | Feature and authorization tests |
-| `.github/workflows/tests.yml` | Continuous integration workflow |
+| `app/Policies/WorkOrderPolicy.php`             | Dispatcher authorization                         |
+| `app/Models/WorkOrder.php`                     | Work-order model                                 |
+| `resources/js/pages/work-orders/index.tsx`     | Listing, filtering, and update controls          |
+| `resources/js/pages/work-orders/create.tsx`    | Creation form and validation messages            |
+| `tests/Feature/`                               | Feature and authorization tests                  |
+| `.github/workflows/tests.yml`                  | Continuous integration workflow                  |
 
 ## Current scope and planned work
 
