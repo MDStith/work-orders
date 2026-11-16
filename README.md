@@ -17,6 +17,7 @@ Built as a portfolio project demonstrating server-side authorization, request va
 - Responsive layout, navigation, breadcrumbs, and empty-state messaging.
 - Dashboard totals with links to status-filtered listings.
 - Pagination with 10 orders per page and status filters preserved in navigation.
+- Title and description search combined with status filtering and pagination.
 
 ## Technology
 

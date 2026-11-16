@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 
 type WorkOrder = {
     id: number;
@@ -22,6 +22,7 @@ type Props = {
     workOrders: PaginatedWorkOrders;
     filters: {
         status: string;
+        search: string;
     };
     canUpdateWorkOrders: boolean;
     canCreateWorkOrders: boolean;
@@ -39,6 +40,8 @@ export default function WorkOrdersIndex({
     canUpdateWorkOrders,
     canCreateWorkOrders,
 }: Props) {
+    const { errors } = usePage().props;
+
     return (
         <>
             <Head title="Work Orders" />
@@ -57,30 +60,103 @@ export default function WorkOrdersIndex({
                     )}
                 </div>
 
-                <div className="mb-6">
-                    <label htmlFor="status" className="mr-3">
-                        Status
-                    </label>
+                <form
+                    key={`${filters.status}:${filters.search}`}
+                    onSubmit={(event) => {
+                        event.preventDefault();
 
-                    <select
-                        id="status"
-                        value={filters.status}
-                        onChange={(event) => {
-                            const status = event.target.value;
+                        const formData = new FormData(event.currentTarget);
+                        const statusValue = formData.get('status');
+                        const searchValue = formData.get('search');
 
-                            router.get(
-                                '/work-orders',
-                                status ? { status } : {},
-                            );
-                        }}
-                        className="rounded border p-2"
+                        const status =
+                            typeof statusValue === 'string' ? statusValue : '';
+                        const search =
+                            typeof searchValue === 'string'
+                                ? searchValue.trim()
+                                : '';
+
+                        const query: Record<string, string> = {};
+
+                        if (status) {
+                            query.status = status;
+                        }
+
+                        if (search !== '') {
+                            query.search = search;
+                        }
+
+                        router.get('/work-orders', query);
+                    }}
+                    className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end"
+                >
+                    <div className="min-w-0 flex-1">
+                        <label
+                            htmlFor="search"
+                            className="mb-2 block text-sm font-medium"
+                        >
+                            Search orders
+                        </label>
+
+                        <input
+                            id="search"
+                            name="search"
+                            type="search"
+                            defaultValue={filters.search}
+                            maxLength={100}
+                            placeholder="Search title or description"
+                            aria-invalid={Boolean(errors.search)}
+                            aria-describedby={
+                                errors.search ? 'search-error' : undefined
+                            }
+                            className="w-full rounded border bg-background p-2"
+                        />
+
+                        {errors.search && (
+                            <p
+                                id="search-error"
+                                className="mt-2 text-sm text-red-600"
+                            >
+                                {errors.search}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="status"
+                            className="mb-2 block text-sm font-medium"
+                        >
+                            Status
+                        </label>
+
+                        <select
+                            id="status"
+                            name="status"
+                            defaultValue={filters.status}
+                            className="w-full rounded border bg-background p-2"
+                        >
+                            <option value="">All statuses</option>
+                            <option value="open">Open</option>
+                            <option value="in_progress">In progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                     >
-                        <option value="">All statuses</option>
-                        <option value="open">Open</option>
-                        <option value="in_progress">In progress</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                </div>
+                        Apply filters
+                    </button>
+
+                    <Link
+                        href="/work-orders"
+                        className="rounded border px-4 py-2 text-center hover:bg-accent"
+                    >
+                        Clear
+                    </Link>
+                </form>
 
                 {workOrders.data.length === 0 && (
                     <div className="rounded-lg border border-dashed p-8 text-center">
@@ -88,8 +164,8 @@ export default function WorkOrdersIndex({
                             No work orders found
                         </h2>
                         <p className="mt-2 text-sm text-muted-foreground">
-                            {filters.status
-                                ? 'No work orders match the selected status.'
+                            {filters.status || filters.search
+                                ? 'No work orders match your search and filters.'
                                 : 'Work orders will appear here once they are created.'}
                         </p>
                     </div>
@@ -126,6 +202,7 @@ export default function WorkOrdersIndex({
                                             {
                                                 status: event.target.value,
                                                 filter_status: filters.status,
+                                                filter_search: filters.search,
                                             },
                                         );
                                     }}

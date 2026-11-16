@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\WorkOrder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -13,13 +14,13 @@ class WorkOrderController extends Controller
 {
     public function index(Request $request): Response
     {
-        $validated = $request->validate(
-            [
-                'status' => ['nullable', 'in:open,in_progress,completed'],
-            ]
-        );
+        $validated = $request->validate([
+            'status' => ['nullable', 'in:open,in_progress,completed'],
+            'search' => ['nullable', 'string', 'max:100'],
+        ]);
 
         $status = $validated['status'] ?? null;
+        $search = trim($validated['search'] ?? '');
 
         $query = WorkOrder::query();
 
@@ -27,14 +28,38 @@ class WorkOrderController extends Controller
             $query->where('status', $status);
         }
 
+        if ($search !== '') {
+            $pattern = '%'.strtr($search, [
+                '!' => '!!',
+                '%' => '!%',
+                '_' => '!_',
+            ]).'%';
+
+            $query->where(function (Builder $query) use ($pattern) {
+                $query->whereRaw("title LIKE ? ESCAPE '!'", [$pattern])
+                    ->orWhereRaw("description LIKE ? ESCAPE '!'", [$pattern]);
+            });
+        }
+
+        $queryParameters = [];
+
+        if ($status) {
+            $queryParameters['status'] = $status;
+        }
+
+        if ($search !== '') {
+            $queryParameters['search'] = $search;
+        }
+
         return Inertia::render('work-orders/index', [
             'workOrders' => $query
                 ->orderByDesc('created_at')
                 ->orderByDesc('id')
                 ->paginate(10)
-                ->appends($status ? ['status' => $status] : []),
+                ->appends($queryParameters),
             'filters' => [
                 'status' => $status ?? '',
+                'search' => $search,
             ],
             'canUpdateWorkOrders' => $request->user()->isDispatcher(),
             'canCreateWorkOrders' => Gate::allows('create', WorkOrder::class),
@@ -48,6 +73,7 @@ class WorkOrderController extends Controller
         $validated = $request->validate([
             'status' => ['required', 'in:open,in_progress,completed'],
             'filter_status' => ['nullable', 'in:open,in_progress,completed'],
+            'filter_search' => ['nullable', 'string', 'max:100'],
         ]);
 
         $workOrder->update([
@@ -55,11 +81,19 @@ class WorkOrderController extends Controller
         ]);
 
         $filterStatus = $validated['filter_status'] ?? null;
+        $filterSearch = trim($validated['filter_search'] ?? '');
 
-        return to_route(
-            'work-orders.index',
-            $filterStatus ? ['status' => $filterStatus] : [],
-        );
+        $queryParameters = [];
+
+        if ($filterStatus) {
+            $queryParameters['status'] = $filterStatus;
+        }
+
+        if ($filterSearch !== '') {
+            $queryParameters['search'] = $filterSearch;
+        }
+
+        return to_route('work-orders.index', $queryParameters);
     }
 
     public function create(): Response
