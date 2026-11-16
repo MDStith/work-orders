@@ -35,8 +35,8 @@ class WorkOrderIndexTest extends TestCase
 
         $response->assertInertia(fn (Assert $page) => $page
             ->component('work-orders/index')
-            ->has('workOrders', 1)
-            ->where('workOrders.0.id', $order->id)
+            ->has('workOrders.data', 1)
+            ->where('workOrders.data.0.id', $order->id)
             ->where('filters.status', '')
             ->where('canUpdateWorkOrders', false)
             ->where('canCreateWorkOrders', false)
@@ -66,8 +66,8 @@ class WorkOrderIndexTest extends TestCase
 
         $response->assertInertia(fn (Assert $page) => $page
             ->component('work-orders/index')
-            ->has('workOrders', 1)
-            ->where('workOrders.0.id', $openOrder->id)
+            ->has('workOrders.data', 1)
+            ->where('workOrders.data.0.id', $openOrder->id)
             ->where('filters.status', 'open')
         );
     }
@@ -112,7 +112,7 @@ class WorkOrderIndexTest extends TestCase
 
         $response->assertInertia(fn (Assert $page) => $page
             ->component('work-orders/index')
-            ->has('workOrders', 0)
+            ->has('workOrders.data', 0)
             ->where('filters.status', '')
         );
     }
@@ -154,10 +154,10 @@ class WorkOrderIndexTest extends TestCase
 
         $response->assertInertia(fn (Assert $page) => $page
             ->component('work-orders/index')
-            ->has('workOrders', 3)
-            ->where('workOrders.0.id', $newestOrder->id)
-            ->where('workOrders.1.id', $middleOrder->id)
-            ->where('workOrders.2.id', $oldestOrder->id)
+            ->has('workOrders.data', 3)
+            ->where('workOrders.data.0.id', $newestOrder->id)
+            ->where('workOrders.data.1.id', $middleOrder->id)
+            ->where('workOrders.data.2.id', $oldestOrder->id)
             ->where('filters.status', '')
         );
     }
@@ -192,8 +192,8 @@ class WorkOrderIndexTest extends TestCase
 
             $response->assertInertia(fn (Assert $page) => $page
                 ->component('work-orders/index')
-                ->has('workOrders', 1)
-                ->where('workOrders.0.id', $order->id)
+                ->has('workOrders.data', 1)
+                ->where('workOrders.data.0.id', $order->id)
                 ->where('filters.status', $order->status)
             );
         }
@@ -216,8 +216,107 @@ class WorkOrderIndexTest extends TestCase
 
         $response->assertInertia(fn (Assert $page) => $page
             ->component('work-orders/index')
-            ->has('workOrders', 0)
+            ->has('workOrders.data', 0)
             ->where('filters.status', 'completed')
         );
+    }
+
+    public function test_work_orders_are_paginated_with_consistent_ordering(): void
+    {
+        $user = User::factory()->create();
+        $createdAt = now();
+        $orders = [];
+
+        for ($number = 1; $number <= 12; $number++) {
+            $order = WorkOrder::create([
+                'title' => 'Pagination order '.$number,
+                'description' => 'Testing pagination.',
+                'status' => 'open',
+            ]);
+
+            $order->created_at = $createdAt;
+            $order->save();
+
+            $orders[] = $order;
+        }
+
+        $this->actingAs($user)
+            ->get('/work-orders')
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('work-orders/index')
+                ->has('workOrders.data', 10)
+                ->where('workOrders.total', 12)
+                ->where('workOrders.per_page', 10)
+                ->where('workOrders.current_page', 1)
+                ->where('workOrders.last_page', 2)
+                ->where('workOrders.prev_page_url', null)
+                ->where('workOrders.data.0.id', $orders[11]->id)
+                ->where('workOrders.data.9.id', $orders[2]->id)
+            );
+
+        $this->get('/work-orders?page=2')
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('work-orders/index')
+                ->has('workOrders.data', 2)
+                ->where('workOrders.current_page', 2)
+                ->where('workOrders.next_page_url', null)
+                ->where('workOrders.data.0.id', $orders[1]->id)
+                ->where('workOrders.data.1.id', $orders[0]->id)
+            );
+    }
+
+    public function test_pagination_links_preserve_status_filter(): void
+    {
+        $user = User::factory()->create();
+
+        for ($number = 1; $number <= 11; $number++) {
+            WorkOrder::create([
+                'title' => 'Open order '.$number,
+                'description' => 'Testing filtered pagination.',
+                'status' => 'open',
+            ]);
+        }
+
+        WorkOrder::create([
+            'title' => 'Completed order',
+            'description' => 'Excluded from the open listing.',
+            'status' => 'completed',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get('/work-orders?status=open');
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('work-orders/index')
+            ->has('workOrders.data', 10)
+            ->where('workOrders.total', 11)
+            ->where('filters.status', 'open')
+            ->where(
+                'workOrders.next_page_url',
+                fn ($url) => is_string($url)
+                    && str_contains($url, 'status=open')
+                    && str_contains($url, 'page=2'),
+            )
+        );
+
+        $this->get('/work-orders?status=open&page=2')
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('work-orders/index')
+                ->has('workOrders.data', 1)
+                ->where('workOrders.data.0.status', 'open')
+                ->where('workOrders.total', 11)
+                ->where('workOrders.current_page', 2)
+                ->where('filters.status', 'open')
+                ->where(
+                    'workOrders.prev_page_url',
+                    fn ($url) => is_string($url)
+                        && str_contains($url, 'status=open')
+                        && str_contains($url, 'page=1'),
+                )
+            );
     }
 }

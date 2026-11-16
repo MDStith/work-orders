@@ -7,8 +7,19 @@ type WorkOrder = {
     status: 'open' | 'in_progress' | 'completed';
 };
 
+type PaginatedWorkOrders = {
+    data: WorkOrder[];
+    current_page: number;
+    last_page: number;
+    total: number;
+    from: number | null;
+    to: number | null;
+    prev_page_url: string | null;
+    next_page_url: string | null;
+};
+
 type Props = {
-    workOrders: WorkOrder[];
+    workOrders: PaginatedWorkOrders;
     filters: {
         status: string;
     };
@@ -71,7 +82,7 @@ export default function WorkOrdersIndex({
                     </select>
                 </div>
 
-                {workOrders.length === 0 && (
+                {workOrders.data.length === 0 && (
                     <div className="rounded-lg border border-dashed p-8 text-center">
                         <h2 className="text-lg font-semibold">
                             No work orders found
@@ -84,7 +95,7 @@ export default function WorkOrdersIndex({
                     </div>
                 )}
 
-                {workOrders.map((order) => (
+                {workOrders.data.map((order) => (
                     <article
                         key={order.id}
                         className="mb-4 rounded-lg border p-4"
@@ -130,6 +141,56 @@ export default function WorkOrdersIndex({
                         )}
                     </article>
                 ))}
+                {workOrders.total > 0 && (
+                    <nav
+                        aria-label="Work order pagination"
+                        className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                        <p className="text-sm text-muted-foreground">
+                            Showing {workOrders.from ?? 0}–{workOrders.to ?? 0}{' '}
+                            of {workOrders.total} orders
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-3">
+                            {workOrders.prev_page_url ? (
+                                <Link
+                                    href={workOrders.prev_page_url}
+                                    className="rounded border px-3 py-2 text-sm hover:bg-accent"
+                                >
+                                    Previous
+                                </Link>
+                            ) : (
+                                <span
+                                    aria-disabled="true"
+                                    className="rounded border px-3 py-2 text-sm text-muted-foreground opacity-50"
+                                >
+                                    Previous
+                                </span>
+                            )}
+
+                            <span className="text-sm">
+                                Page {workOrders.current_page} of{' '}
+                                {workOrders.last_page}
+                            </span>
+
+                            {workOrders.next_page_url ? (
+                                <Link
+                                    href={workOrders.next_page_url}
+                                    className="rounded border px-3 py-2 text-sm hover:bg-accent"
+                                >
+                                    Next
+                                </Link>
+                            ) : (
+                                <span
+                                    aria-disabled="true"
+                                    className="rounded border px-3 py-2 text-sm text-muted-foreground opacity-50"
+                                >
+                                    Next
+                                </span>
+                            )}
+                        </div>
+                    </nav>
+                )}
             </main>
         </>
     );

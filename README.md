@@ -16,6 +16,7 @@ Built as a portfolio project demonstrating server-side authorization, request va
 - Form validation with inline error messages.
 - Responsive layout, navigation, breadcrumbs, and empty-state messaging.
 - Dashboard totals with links to status-filtered listings.
+- Pagination with 10 orders per page and status filters preserved in navigation.
 
 ## Technology
 

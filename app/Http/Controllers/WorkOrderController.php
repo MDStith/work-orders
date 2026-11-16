@@ -28,7 +28,11 @@ class WorkOrderController extends Controller
         }
 
         return Inertia::render('work-orders/index', [
-            'workOrders' => $query->orderByDesc('created_at')->get(),
+            'workOrders' => $query
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')
+                ->paginate(10)
+                ->appends($status ? ['status' => $status] : []),
             'filters' => [
                 'status' => $status ?? '',
             ],
