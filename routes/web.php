@@ -30,4 +30,8 @@ Route::put('/work-orders/{workOrder}', [WorkOrderController::class, 'updateDetai
     ->middleware('auth')
     ->name('work-orders.update-details');
 
+Route::delete('/work-orders/{workOrder}', [WorkOrderController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('work-orders.destroy');
+
 require __DIR__.'/settings.php';

@@ -63,6 +63,7 @@ class WorkOrderController extends Controller
             ],
             'canUpdateWorkOrders' => $request->user()->isDispatcher(),
             'canCreateWorkOrders' => Gate::allows('create', WorkOrder::class),
+            'canDeleteWorkOrders' => $request->user()->isDispatcher(),
         ]);
     }
 
@@ -151,5 +152,34 @@ class WorkOrderController extends Controller
         ]);
 
         return to_route('work-orders.index');
+    }
+
+    public function destroy(
+        Request $request,
+        WorkOrder $workOrder,
+    ): RedirectResponse {
+        Gate::authorize('delete', $workOrder);
+
+        $validated = $request->validate([
+            'filter_status' => ['nullable', 'in:open,in_progress,completed'],
+            'filter_search' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $filterStatus = $validated['filter_status'] ?? null;
+        $filterSearch = trim($validated['filter_search'] ?? '');
+
+        $queryParameters = [];
+
+        if ($filterStatus) {
+            $queryParameters['status'] = $filterStatus;
+        }
+
+        if ($filterSearch !== '') {
+            $queryParameters['search'] = $filterSearch;
+        }
+
+        $workOrder->delete();
+
+        return to_route('work-orders.index', $queryParameters);
     }
 }

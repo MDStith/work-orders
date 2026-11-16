@@ -1,4 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 
 type WorkOrder = {
     id: number;
@@ -26,6 +27,7 @@ type Props = {
     };
     canUpdateWorkOrders: boolean;
     canCreateWorkOrders: boolean;
+    canDeleteWorkOrders: boolean;
 };
 
 const statusLabels = {
@@ -39,8 +41,37 @@ export default function WorkOrdersIndex({
     filters,
     canUpdateWorkOrders,
     canCreateWorkOrders,
+    canDeleteWorkOrders,
 }: Props) {
     const { errors } = usePage().props;
+
+    const [deletingOrderId, setDeletingOrderId] = useState<number | null>(null);
+
+    function deleteOrder(order: WorkOrder): void {
+        if (deletingOrderId !== null) {
+            return;
+        }
+
+        const confirmed = window.confirm(
+            `Delete "${order.title}"? This cannot be undone.`,
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        setDeletingOrderId(order.id);
+
+        router.delete(`/work-orders/${order.id}`, {
+            data: {
+                filter_status: filters.status,
+                filter_search: filters.search,
+            },
+            onFinish: () => {
+                setDeletingOrderId(null);
+            },
+        });
+    }
 
     return (
         <>
@@ -223,6 +254,19 @@ export default function WorkOrdersIndex({
                                     <option value="completed">Completed</option>
                                 </select>
                             </div>
+                        )}
+                        {canDeleteWorkOrders && (
+                            <button
+                                type="button"
+                                onClick={() => deleteOrder(order)}
+                                disabled={deletingOrderId !== null}
+                                aria-label={`Delete work order: ${order.title}`}
+                                className="mt-3 rounded border border-red-600 px-3 py-2 text-sm text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-red-950"
+                            >
+                                {deletingOrderId === order.id
+                                    ? 'Deleting...'
+                                    : 'Delete'}
+                            </button>
                         )}
                     </article>
                 ))}

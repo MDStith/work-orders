@@ -44,7 +44,7 @@ class WorkOrderPolicy
      */
     public function delete(User $user, WorkOrder $workOrder): bool
     {
-        return false;
+        return $user->isDispatcher();
     }
 
     /**
