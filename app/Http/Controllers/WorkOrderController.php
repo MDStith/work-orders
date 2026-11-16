@@ -94,6 +94,8 @@ class WorkOrderController extends Controller
             $queryParameters['search'] = $filterSearch;
         }
 
+        Inertia::flash('success', 'Work order status updated.');
+
         return to_route('work-orders.index', $queryParameters);
     }
 
@@ -118,6 +120,8 @@ class WorkOrderController extends Controller
             'description' => $validated['description'],
             'status' => 'open',
         ]);
+
+        Inertia::flash('success', 'Work order created.');
 
         return to_route('work-orders.index');
     }
@@ -151,6 +155,8 @@ class WorkOrderController extends Controller
             'description' => $validated['description'],
         ]);
 
+        Inertia::flash('success', 'Work order details updated.');
+
         return to_route('work-orders.index');
     }
 
@@ -179,6 +185,8 @@ class WorkOrderController extends Controller
         }
 
         $workOrder->delete();
+
+        Inertia::flash('success', 'Work order deleted.');
 
         return to_route('work-orders.index', $queryParameters);
     }

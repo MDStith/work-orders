@@ -1,4 +1,5 @@
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, router } from '@inertiajs/react';
+import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
@@ -7,6 +8,14 @@ import AuthLayout from '@/layouts/auth-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Work Orders';
+
+router.on('flash', (event) => {
+    const message = event.detail.flash.success;
+
+    if (typeof message === 'string' && message !== '') {
+        toast.success(message);
+    }
+});
 
 void createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
