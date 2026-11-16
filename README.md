@@ -4,6 +4,26 @@ A full-stack work-order application built with Laravel, React, TypeScript, and M
 
 Built as a portfolio project demonstrating server-side authorization, request validation, database persistence, automated testing, and continuous integration.
 
+## Screenshots
+
+### Dashboard
+
+Status totals link directly to filtered work-order listings.
+
+![Work Orders dashboard showing totals by status](docs/screenshots/dashboard.png)
+
+### Dispatcher workspace
+
+Dispatchers can search and filter orders, create new orders, edit details, update statuses, and delete orders.
+
+![Dispatcher work-order listing with search, filters, and management controls](docs/screenshots/work-orders-dispatcher.png)
+
+### Mobile layout
+
+The work-order listing adapts to a narrow screen.
+
+![Work-order listing displayed at a mobile viewport width](docs/screenshots/work-orders-mobile.png)
+
 ## Features
 
 - Registration and authentication.
@@ -252,6 +272,6 @@ The application supports viewing, searching, filtering, paginating, creating, ed
 
 Role administration and restoration of deleted orders are outside the current scope.
 
-The next phase focuses on clean-clone installation verification, remaining starter-kit branding and action feedback as needed, README screenshots, and deployment preparation.
+Clean-clone installation verification, application branding, success notifications, and README screenshots are complete. The next phase is deployment preparation.
 
 Planned deployment uses Amazon Web Services: EC2 for application hosting, RDS for the database, HTTPS for secure access, and CloudWatch for monitoring. Deployment is not yet implemented.
