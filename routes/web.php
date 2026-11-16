@@ -22,4 +22,12 @@ Route::post('/work-orders', [WorkOrderController::class, 'store'])
     ->middleware('auth')
     ->name('work-orders.store');
 
+Route::get('/work-orders/{workOrder}/edit', [WorkOrderController::class, 'edit'])
+    ->middleware('auth')
+    ->name('work-orders.edit');
+
+Route::put('/work-orders/{workOrder}', [WorkOrderController::class, 'updateDetails'])
+    ->middleware('auth')
+    ->name('work-orders.update-details');
+
 require __DIR__.'/settings.php';

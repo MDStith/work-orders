@@ -186,6 +186,14 @@ export default function WorkOrdersIndex({
 
                         {canUpdateWorkOrders && (
                             <div className="mt-3">
+                                <Link
+                                    href={`/work-orders/${order.id}/edit`}
+                                    className="mb-3 inline-block rounded border px-3 py-2 text-sm hover:bg-accent"
+                                >
+                                    Edit details
+                                </Link>
+                                <br />
+
                                 <label
                                     htmlFor={`status-${order.id}`}
                                     className="mr-3"

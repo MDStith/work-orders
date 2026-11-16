@@ -120,4 +120,36 @@ class WorkOrderController extends Controller
 
         return to_route('work-orders.index');
     }
+
+    public function edit(WorkOrder $workOrder): Response
+    {
+        Gate::authorize('update', $workOrder);
+
+        return Inertia::render('work-orders/edit', [
+            'workOrder' => [
+                'id' => $workOrder->id,
+                'title' => $workOrder->title,
+                'description' => $workOrder->description,
+            ],
+        ]);
+    }
+
+    public function updateDetails(
+        Request $request,
+        WorkOrder $workOrder,
+    ): RedirectResponse {
+        Gate::authorize('update', $workOrder);
+
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:10000'],
+        ]);
+
+        $workOrder->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+        ]);
+
+        return to_route('work-orders.index');
+    }
 }

@@ -18,6 +18,7 @@ Built as a portfolio project demonstrating server-side authorization, request va
 - Dashboard totals with links to status-filtered listings.
 - Pagination with 10 orders per page and status filters preserved in navigation.
 - Title and description search combined with status filtering and pagination.
+- Dispatcher-only editing of work-order titles and descriptions.
 
 ## Technology
 
@@ -38,12 +39,13 @@ Inertia connects Laravel controllers to React pages. Laravel handles routing, au
 
 ## Permissions
 
-| Action                   | Guest | Viewer | Dispatcher |
-| ------------------------ | ----- | ------ | ---------- |
-| View and filter orders   | No    | Yes    | Yes        |
-| Open the creation form   | No    | No     | Yes        |
-| Create an order          | No    | No     | Yes        |
-| Update an order's status | No    | No     | Yes        |
+| Action                     | Guest | Viewer | Dispatcher |
+| -------------------------- | ----- | ------ | ---------- |
+| View and filter orders     | No    | Yes    | Yes        |
+| Open the creation form     | No    | No     | Yes        |
+| Create an order            | No    | No     | Yes        |
+| Update an order's status   | No    | No     | Yes        |
+| Edit title and description | No    | No     | Yes        |
 
 New registrations always receive the Viewer role. Submitted role values cannot grant Dispatcher access.
 
