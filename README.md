@@ -81,7 +81,7 @@ cp .env.example .env
 
 ### Configure the local environment
 
-Set the following values in `.env` for a new local installation:
+The example environment defaults to SQLite. For the MySQL database provided by Laravel Sail, set these values in `.env`, replacing any existing or commented versions:
 
 ```dotenv
 APP_URL=http://localhost
@@ -94,9 +94,17 @@ DB_USERNAME=sail
 DB_PASSWORD=password
 ```
 
-These are example local development credentials. Keep `.env` out of version control.
+These credentials are for local development.
 
-The database host is `mysql` because Laravel connects to the MySQL service inside Docker.
+`DB_HOST=mysql` refers to the MySQL service inside Docker. Sail serves the application at http://localhost on port 80.
+
+If running a separate clone alongside another installation, give it a unique Docker Compose project name in `.env`:
+
+```dotenv
+COMPOSE_PROJECT_NAME=work-orders-install-check
+```
+
+Stop the other installation's containers before starting this clone because they use the same host ports.
 
 ### Start the application
 
